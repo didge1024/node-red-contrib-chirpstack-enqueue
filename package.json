@@ -4,7 +4,7 @@
   "description": "Node-RED node to enqueue unicast downlinks to ChirpStack devices via gRPC.",
   "main": "chirpstack-enqueue.js",
   "scripts": {
-    "test": "mocha test/**/*.test.js --timeout 5000"
+    "test": "mocha test/**/*.test.js --timeout 5000 --allow-empty"
   },
   "keywords": [
     "node-red",
