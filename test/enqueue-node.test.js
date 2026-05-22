@@ -53,6 +53,8 @@ const grpcStub = {
     Metadata: class {
         constructor() { this._entries = {}; }
         set(k, v) { this._entries[k] = v; }
+        // Matches the real grpc.Metadata.get(key) signature (returns array)
+        get(k) { return this._entries[k] !== undefined ? [this._entries[k]] : []; }
     }
 };
 
@@ -204,6 +206,6 @@ describe("chirpstack-enqueue node", () => {
 
         await n1._emit("input", { payload: "deadbeef", apiKey: "override-key" });
 
-        assert.ok(capturedMeta._entries["authorization"].includes("override-key"));
+        assert.ok(capturedMeta.get("authorization")[0].includes("override-key"));
     });
 });
