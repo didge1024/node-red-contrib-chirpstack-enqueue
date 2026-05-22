@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-chirpstack-enqueue",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Node-RED node to enqueue unicast downlinks to ChirpStack devices via gRPC.",
   "main": "chirpstack-enqueue.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "downlink",
     "grpc"
   ],
-  "author": "",
+  "author": "michael@bellhart.com",
   "license": "MIT",
   "dependencies": {
     "@chirpstack/chirpstack-api": "^4.0.0",
