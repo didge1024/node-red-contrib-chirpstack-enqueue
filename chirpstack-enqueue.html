@@ -145,7 +145,7 @@
 
     <h3>Inputs</h3>
     <ul>
-        <li><b>msg.payload</b> or <b>msg.payload.data</b>: data to send (hex, base64, UTF-8, or Buffer)</li>
+        <li><b>msg.payload</b> or <b>msg.payload.data</b>: data to send (hex, base64, UTF-8, or Buffer). Note: short all-alphanumeric strings (e.g. <code>"ON"</code>) are auto-detected as base64, not UTF-8. Use a hex string or Buffer to send ASCII text reliably.</li>
         <li><b>msg.devEui</b> or <b>msg.devName</b>: device EUI (16-char hex) or device name</li>
         <li><b>msg.applicationId</b>: optional application UUID to scope device name lookup</li>
         <li><b>msg.fPort</b> or <b>msg.payload.fPort</b>: LoRaWAN FPort</li>
