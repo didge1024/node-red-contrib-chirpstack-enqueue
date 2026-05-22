@@ -65,21 +65,21 @@ module.exports = function(RED) {
             const apiKey = msg.apiKey || defaultApiKey;
 
             // Resolve device identifier (EUI or name)
-            const identifier = config.devEui
-                || msg.devEui
+            const identifier = msg.devEui
                 || msg.devName
-                || (msg.payload && (msg.payload.devEui || msg.payload.devName));
+                || (msg.payload && (msg.payload.devEui || msg.payload.devName))
+                || config.devEui;
 
             // Resolve optional application ID for scoping name lookups
-            const applicationId = config.applicationId
-                || msg.applicationId
+            const applicationId = msg.applicationId
                 || (msg.payload && msg.payload.applicationId)
+                || config.applicationId
                 || null;
 
             // Resolve fPort
-            const fPort = config.fPort
-                || msg.fPort
+            const fPort = msg.fPort
                 || (msg.payload && msg.payload.fPort)
+                || config.fPort
                 || 10;
 
             // Resolve confirmed flag
@@ -97,7 +97,9 @@ module.exports = function(RED) {
             if (!identifier) {
                 node.error("Device identifier missing (devEui or devName)");
                 node.status({ fill: "red", shape: "ring", text: "Missing device" });
-                return;
+                msg.payload = { success: false };
+                msg.error = { message: "Device identifier missing (devEui or devName)" };
+                return node.send(msg);
             }
 
             // ====================================================================
@@ -129,7 +131,9 @@ module.exports = function(RED) {
             catch (err) {
                 node.error("Payload conversion error: " + err.message);
                 node.status({ fill: "red", shape: "ring", text: "Conversion error" });
-                return;
+                msg.payload = { success: false };
+                msg.error = { message: "Payload conversion error: " + err.message };
+                return node.send(msg);
             }
 
             // Debug logging
