@@ -1,0 +1,171 @@
+<script type="text/javascript">
+    RED.nodes.registerType("chirpstack-server", {
+        category: "config",
+        defaults: {
+            server: { value: "localhost:8080", required: true }
+        },
+        credentials: {
+            apiToken: { type: "password" }
+        },
+        label: function () {
+            return this.server || "ChirpStack server";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="chirpstack-server">
+    <div class="form-row">
+        <label for="node-config-input-server">
+            <i class="fa fa-server"></i>
+            <span>Server</span>
+        </label>
+        <input type="text" id="node-config-input-server" placeholder="localhost:8080">
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-apiToken">
+            <i class="fa fa-key"></i>
+            <span>API Token</span>
+        </label>
+        <input type="password" id="node-config-input-apiToken">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="chirpstack-server">
+    <p>ChirpStack gRPC server configuration.</p>
+    <ul>
+        <li><b>Server</b>: gRPC endpoint (e.g. <code>chirpstack:8080</code>)</li>
+        <li><b>API Token</b>: ChirpStack API token used for Bearer authentication.</li>
+    </ul>
+</script>
+
+<!-- ===================== chirpstack-enqueue (unicast) ===================== -->
+
+<script type="text/javascript">
+    RED.nodes.registerType("chirpstack-enqueue", {
+        category: "network",
+        color: "#c0deed",
+        defaults: {
+            name:          { value: "" },
+            server:        { type: "chirpstack-server", required: true },
+            devEui:        { value: "" },
+            applicationId: { value: "" },
+            fPort:         { value: 10 },
+            confirmed:     { value: false },
+            debug:         { value: false }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "arrow-in.svg",
+        align: "right",
+        label: function () {
+            return this.name || "chirpstack-enqueue";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="chirpstack-enqueue">
+    <div class="form-row">
+        <label for="node-input-name">
+            <i class="fa fa-tag"></i>
+            <span>Name</span>
+        </label>
+        <input type="text" id="node-input-name" placeholder="Optional name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-server">
+            <i class="fa fa-server"></i>
+            <span>Server</span>
+        </label>
+        <input type="text" id="node-input-server">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-devEui">
+            <i class="fa fa-dot-circle-o"></i>
+            <span>Device EUI or Name</span>
+        </label>
+        <input type="text" id="node-input-devEui"
+               placeholder="0102030405060708 or my-sensor-name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-applicationId">
+            <i class="fa fa-folder-o"></i>
+            <span>Application ID</span>
+        </label>
+        <input type="text" id="node-input-applicationId"
+               placeholder="Optional — scope name lookup to this application UUID">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-fPort">
+            <i class="fa fa-plug"></i>
+            <span>FPort</span>
+        </label>
+        <input type="number" id="node-input-fPort" min="1" max="223" style="width:80px;">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-confirmed">
+            <i class="fa fa-check-square-o"></i>
+            <span>Confirmed</span>
+        </label>
+        <input type="checkbox" id="node-input-confirmed">
+        <span style="margin-left:5px;">Require acknowledgment</span>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-debug">
+            <i class="fa fa-bug"></i>
+            <span>Debug Logging</span>
+        </label>
+        <input type="checkbox" id="node-input-debug">
+        <span style="margin-left: 5px;">Show payload logs</span>
+    </div>
+
+    <div class="form-tips">
+        <p>All fields can be overridden per-message:</p>
+        <ul>
+            <li><code>msg.server</code> — gRPC endpoint (creates a temporary client)</li>
+            <li><code>msg.apiKey</code> — Bearer token override</li>
+            <li><code>msg.devEui</code> or <code>msg.devName</code> — device EUI or name</li>
+            <li><code>msg.applicationId</code> — scope name lookup to one application</li>
+            <li><code>msg.fPort</code> or <code>msg.payload.fPort</code></li>
+            <li><code>msg.confirmed</code> or <code>msg.payload.confirmed</code></li>
+            <li><code>msg.payload</code> or <code>msg.payload.data</code> — hex, base64, UTF-8, or Buffer</li>
+        </ul>
+        <p>If <b>Device EUI or Name</b> is a name, the node searches all applications accessible to the token. Providing an <b>Application ID</b> skips that search.</p>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="chirpstack-enqueue">
+    <p>Enqueues a unicast downlink message to a ChirpStack device using the gRPC API.</p>
+
+    <h3>Inputs</h3>
+    <ul>
+        <li><b>msg.payload</b> or <b>msg.payload.data</b>: data to send (hex, base64, UTF-8, or Buffer)</li>
+        <li><b>msg.devEui</b> or <b>msg.devName</b>: device EUI (16-char hex) or device name</li>
+        <li><b>msg.applicationId</b>: optional application UUID to scope device name lookup</li>
+        <li><b>msg.fPort</b> or <b>msg.payload.fPort</b>: LoRaWAN FPort</li>
+        <li><b>msg.confirmed</b> or <b>msg.payload.confirmed</b>: <code>true</code>/<code>false</code></li>
+        <li><b>msg.apiKey</b>: override the Bearer token for this message only</li>
+        <li><b>msg.server</b>: override the gRPC server address for this message only</li>
+    </ul>
+
+    <h3>Outputs</h3>
+    <ul>
+        <li><code>msg.payload.success</code>: <code>true</code> if enqueue succeeded</li>
+        <li><code>msg.payload.id</code>: UUID of the enqueued downlink message</li>
+        <li><code>msg.payload.fCnt</code>: frame counter (if returned by ChirpStack)</li>
+        <li><code>msg.payload.devEui</code>: resolved device EUI</li>
+        <li>On error: <code>msg.payload.success</code> is <code>false</code>, details in <code>msg.error</code></li>
+    </ul>
+
+    <h3>Device Name Resolution</h3>
+    <p>If the device identifier is not a 16-character hex EUI, it is treated as a device name.
+    The node calls <code>ApplicationService.List</code> to get all applications accessible to
+    the token, then searches each application's devices for a name match. Provide an
+    <b>Application ID</b> to skip the application listing and search only that application.</p>
+</script>
