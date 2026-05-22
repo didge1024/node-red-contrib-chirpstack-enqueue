@@ -1,0 +1,36 @@
+{
+  "name": "node-red-contrib-chirpstack-enqueue",
+  "version": "0.1.0",
+  "description": "Node-RED node to enqueue unicast downlinks to ChirpStack devices via gRPC.",
+  "main": "chirpstack-enqueue.js",
+  "scripts": {
+    "test": "mocha test/**/*.test.js --timeout 5000"
+  },
+  "keywords": [
+    "node-red",
+    "chirpstack",
+    "lorawan",
+    "downlink",
+    "grpc"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@chirpstack/chirpstack-api": "^4.0.0",
+    "@grpc/grpc-js": "^1.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^11.0.0",
+    "sinon": "^17.0.0",
+    "node-red-node-test-helper": "^0.3.0",
+    "node-red": "^3.0.0"
+  },
+  "node-red": {
+    "nodes": {
+      "chirpstack-enqueue": "chirpstack-enqueue.js"
+    }
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
